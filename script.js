@@ -12,21 +12,42 @@
   var modal = document.querySelector("[data-lightbox-modal]");
   var modalImage = document.querySelector("[data-lightbox-image]");
   var modalClose = document.querySelector("[data-lightbox-close]");
+  var desktopQuery = window.matchMedia("(min-width: 1101px)");
 
-  if (year) year.textContent = new Date().getFullYear();
+  if (year) year.textContent = String(new Date().getFullYear());
+
+  function setMenuOpen(isOpen) {
+    if (!mainNav || !menuToggle) return;
+    mainNav.classList.toggle("open", isOpen);
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+    if (!modal || !modal.classList.contains("open")) {
+      document.body.classList.toggle("no-scroll", isOpen);
+    }
+  }
 
   function closeMenu() {
-    if (!mainNav || !menuToggle) return;
-    mainNav.classList.remove("open");
-    menuToggle.setAttribute("aria-expanded", "false");
+    setMenuOpen(false);
   }
 
   if (menuToggle && mainNav) {
     menuToggle.addEventListener("click", function () {
-      var isOpen = mainNav.classList.toggle("open");
-      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      setMenuOpen(!mainNav.classList.contains("open"));
     });
-    navLinks.forEach(function (link) { link.addEventListener("click", closeMenu); });
+    navLinks.forEach(function (link) {
+      link.addEventListener("click", closeMenu);
+    });
+    var cta = mainNav.querySelector(".nav-cta");
+    if (cta) cta.addEventListener("click", closeMenu);
+  }
+
+  if (desktopQuery.addEventListener) {
+    desktopQuery.addEventListener("change", function (event) {
+      if (event.matches) closeMenu();
+    });
+  } else if (desktopQuery.addListener) {
+    desktopQuery.addListener(function (event) {
+      if (event.matches) closeMenu();
+    });
   }
 
   function updateHeader() {
@@ -65,6 +86,7 @@
 
   function openLightbox(source, alt) {
     if (!modal || !modalImage) return;
+    closeMenu();
     modalImage.src = source;
     modalImage.alt = alt || "OB Prime Events setup";
     modal.classList.add("open");
@@ -76,7 +98,9 @@
     if (!modal) return;
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
+    if (!mainNav || !mainNav.classList.contains("open")) {
+      document.body.classList.remove("no-scroll");
+    }
   }
 
   document.querySelectorAll("[data-lightbox]").forEach(function (trigger) {
@@ -92,7 +116,10 @@
     });
   }
   document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") closeLightbox();
+    if (event.key === "Escape") {
+      closeLightbox();
+      closeMenu();
+    }
   });
 
   function formatDate(value) {
@@ -121,13 +148,7 @@
         "Details: " + message
       ].join("\n");
 
-      /*
-       * Add the real number when ready, digits only with country code:
-       * var whatsappNumber = "2547XXXXXXXX";
-       * The empty value intentionally prevents the site from sending enquiries
-       * to a number that has not yet been supplied.
-       */
-      var whatsappNumber = "";
+      var whatsappNumber = "254119209107";
       if (whatsappNumber) {
         window.open("https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(enquiry), "_blank", "noopener");
         formStatus.textContent = "Your enquiry is ready in WhatsApp.";
@@ -137,10 +158,10 @@
           formStatus.textContent = "Your enquiry is copied. Add OB's WhatsApp number to send it.";
           formStatus.classList.add("success");
         }).catch(function () {
-          formStatus.textContent = "Add OB's WhatsApp number in script.js before publishing.";
+          formStatus.textContent = "Unable to prepare the WhatsApp message automatically.";
         });
       } else {
-        formStatus.textContent = "Add OB's WhatsApp number in script.js before publishing.";
+        formStatus.textContent = "Unable to prepare the WhatsApp message automatically.";
       }
     });
   }
