@@ -886,7 +886,16 @@ h1 em, h2 em { color: var(--coral); font-style: normal; }
   line-height: 1.85;
 }
 .contact-details { display: grid; gap: 19px; margin-top: 40px; }
-.contact-detail { display: flex; align-items: flex-start; gap: 15px; }
+.contact-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  min-width: 0;
+}
+.detail-content {
+  min-width: 0;
+  flex: 1 1 auto;
+}
 .detail-icon {
   display: grid;
   place-items: center;
@@ -900,7 +909,7 @@ h1 em, h2 em { color: var(--coral); font-style: normal; }
 }
 .contact-detail small {
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
   color: var(--gold);
   font-size: 9px;
   letter-spacing: .16em;
@@ -911,6 +920,38 @@ h1 em, h2 em { color: var(--coral); font-style: normal; }
   font-size: 13px;
   font-weight: 500;
   line-height: 1.45;
+}
+.link-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: 4px;
+}
+.link-cluster a,
+.inline-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 1px solid rgba(229, 185, 109, .45);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .04);
+  color: rgba(255, 255, 255, .92);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition: background .2s, border-color .2s, transform .2s;
+}
+.link-cluster a:hover,
+.inline-link:hover {
+  background: rgba(229, 185, 109, .14);
+  border-color: rgba(229, 185, 109, .85);
+  transform: translateY(-1px);
+}
+.inline-link {
+  width: fit-content;
 }
 .contact-edit-note { margin-top: 28px; color: rgba(255, 255, 255, .38); font-size: 10px; font-style: italic; }
 
@@ -1054,8 +1095,9 @@ h1 em, h2 em { color: var(--coral); font-style: normal; }
   .main-nav {
     position: absolute;
     top: 100%;
-    left: calc(50% - 50vw);
-    right: calc(50% - 50vw);
+    left: 0;
+    right: 0;
+    width: 100%;
     display: grid;
     gap: 0;
     padding: 8px var(--gutter) calc(18px + var(--safe-bottom));
